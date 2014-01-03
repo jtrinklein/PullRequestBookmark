@@ -1,0 +1,178 @@
+<html>
+    <head>
+        <title>Pull Request Bookmark Creator</title>
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="src/bootstrap.min.js"></script>
+
+        <script src="src/createBookmark.js"></script>
+
+        <style>
+            .row {
+                margin-bottom: 20px;
+            }
+            .container {
+                width: 550px;
+        </style>
+        <script>
+            function generateBookmark() {
+                var tpServ = $('.tpserver').val();
+                var tcServ = $('.tcserver').val();
+                var tcProjId = $('.tcprojectid').val();
+                var reviewers = [];
+                $('.reviewer').each(function() {
+                    var input = $(this).find('input');
+                    if(input.val().length > 0) {
+                        reviewers.push(input.val());
+                    }
+                });
+                var testers = [];
+                $('.tester').each(function() {
+                    var input = $(this).find('input');
+                    if(input.val().length > 0) {
+                        testers.push(input.val());
+                    }
+                });
+                if(tpServ.length === 0 ||
+                    tcServ.length === 0 ||
+                    tcProjId.length === 0 ||
+                    reviewers.length === 0 ||
+                    testers.length === 0) {
+                    return;
+                }
+                var bookmark = createBookmarkUrl(tpServ, tcServ, tcProjId, reviewers, testers);
+                $('.bookmarktext').text(bookmark);
+                $('.bookmark').show();
+            }
+            function removeReviewer(event) {
+                $(event.target).parents('.reviewer').remove();
+            }
+            function addReviewer(event) {
+                var parent = $(event.target).parents('.reviewer');
+                var txt = parent.find('input');
+                if(txt.val().trim().length === 0) {
+                    return;
+                }
+                txt.unbind('keyup');
+                var button = parent.find('button');
+                button.removeClass('btn-success');
+                button.addClass('btn-danger');
+                button.text('-');
+                button.attr('onclick','removeReviewer(event);');
+                var reviewer = $('<div class="input-group reviewer"><span class="input-group-addon">@</span><input type="text" class="form-control"><span class="input-group-btn"><button class="btn btn-success" type="button" onclick="addReviewer(event);">+</button></span></div>');
+                reviewer.keyup(function(e) {
+                    if(e.keyCode === 13) {
+                        addReviewer(e);
+                    }
+                });
+                parent.parents('.reviewers').append(reviewer);
+                reviewer.find('input').focus();
+            }
+            function removeTester(event) {
+                $(event.target).parents('.tester').remove();
+            }
+            function addTester(event) {
+                var parent = $(event.target).parents('.tester');
+                var txt = parent.find('input');
+                if(txt.val().trim().length === 0) {
+                    return;
+                }
+                txt.unbind('keyup');
+                var button = parent.find('button');
+                button.removeClass('btn-success');
+                button.addClass('btn-danger');
+                button.text('-');
+                button.attr('onclick','removeTester(event);');
+                var tester = $('<div class="input-group tester"><span class="input-group-addon">@</span><input type="text" class="form-control"><span class="input-group-btn"><button class="btn btn-success" type="button" onclick="addTester(event);">+</button></span></div>');
+
+                tester.keyup(function(e) {
+                    if(e.keyCode === 13) {
+                        addTester(e);
+                    }
+                });
+                parent.parents('.testers').append(tester);
+                tester.find('input').focus();
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="input-group">
+                    <span class="input-group-addon">TargetProcess server</span>
+                    <input type="text" class="form-control tpserver" placeholder="Ex: daptiv.tpondemand.com">
+                </div><!-- /input-group -->
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <span class="input-group-addon">Teamcity server</span>
+                    <input type="text" class="form-control tcserver" placeholder="Ex: teamcity">
+                </div><!-- /input-group -->
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <span class="input-group-addon">Teamcity ProjectID</span>
+                    <input type="text" class="form-control tcprojectid" placeholder="Ex: PpmFeatureBranches">
+                </div><!-- /input-group -->
+            </div>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Reviewers - GitHub user names</h3>
+                    </div>
+                    <div class="panel-body reviewers">
+                        <div class="input-group reviewer">
+                            <span class="input-group-addon">@</span>
+                            <input type="text" class="form-control" onkeyup="if(event.keyCode===13){addReviewer(event);}">
+                            <span class="input-group-btn">
+                                <button class="btn btn-success" type="button" onclick="addReviewer(event);">+</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Testers</h3>
+                    </div>
+                    <div class="panel-body testers">
+                        <div class="input-group tester">
+                            <span class="input-group-addon">@</span>
+                            <input type="text" class="form-control" onkeyup="if(event.keyCode===13){addTester(event);}">
+                            <span class="input-group-btn">
+                                <button class="btn btn-success" type="button" onclick="addTester(event);">+</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                </div>
+            </div><!-- /.row -->
+            <div class="row">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="button" onclick="generateBookmark(event);">Create Bookmark</button>
+                    </span>
+                </div><!-- /input-group -->
+            </div>
+            <div class="row bookmark" style="display:none;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Create a new bookmark with this as the url:</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="input-group">
+                            <textarea cols="80" rows="10" class="form-control bookmarktext" disabled></textarea>
+                        </div><!-- /input-group -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
