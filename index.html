@@ -10,9 +10,9 @@
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
 
         <!-- Latest compiled and minified JavaScript -->
-        <script src="src/bootstrap.min.js"></script>
+        <script src="src/bootstrap.min.js" type="text/javascript"></script>
 
-        <script src="src/createBookmark.js"></script>
+        <script src="src/createBookmark.js" type="text/javascript"></script>
 
         <style>
             .row {
@@ -21,86 +21,6 @@
             .container {
                 width: 550px;
         </style>
-        <script>
-            function generateBookmark() {
-                var tpServ = $('.tpserver').val();
-                var tcServ = $('.tcserver').val();
-                var tcProjId = $('.tcprojectid').val();
-                var reviewers = [];
-                $('.reviewer').each(function() {
-                    var input = $(this).find('input');
-                    if(input.val().length > 0) {
-                        reviewers.push(input.val());
-                    }
-                });
-                var testers = [];
-                $('.tester').each(function() {
-                    var input = $(this).find('input');
-                    if(input.val().length > 0) {
-                        testers.push(input.val());
-                    }
-                });
-                if(tpServ.length === 0 ||
-                    tcServ.length === 0 ||
-                    tcProjId.length === 0 ||
-                    reviewers.length === 0 ||
-                    testers.length === 0) {
-                    return;
-                }
-                var bookmark = createBookmarkUrl(tpServ, tcServ, tcProjId, reviewers, testers);
-                $('.bookmarktext').text(bookmark);
-                $('.bookmark').show();
-            }
-            function removeReviewer(event) {
-                $(event.target).parents('.reviewer').remove();
-            }
-            function addReviewer(event) {
-                var parent = $(event.target).parents('.reviewer');
-                var txt = parent.find('input');
-                if(txt.val().trim().length === 0) {
-                    return;
-                }
-                txt.unbind('keyup');
-                var button = parent.find('button');
-                button.removeClass('btn-success');
-                button.addClass('btn-danger');
-                button.text('-');
-                button.attr('onclick','removeReviewer(event);');
-                var reviewer = $('<div class="input-group reviewer"><span class="input-group-addon">@</span><input type="text" class="form-control"><span class="input-group-btn"><button class="btn btn-success" type="button" onclick="addReviewer(event);">+</button></span></div>');
-                reviewer.keyup(function(e) {
-                    if(e.keyCode === 13) {
-                        addReviewer(e);
-                    }
-                });
-                parent.parents('.reviewers').append(reviewer);
-                reviewer.find('input').focus();
-            }
-            function removeTester(event) {
-                $(event.target).parents('.tester').remove();
-            }
-            function addTester(event) {
-                var parent = $(event.target).parents('.tester');
-                var txt = parent.find('input');
-                if(txt.val().trim().length === 0) {
-                    return;
-                }
-                txt.unbind('keyup');
-                var button = parent.find('button');
-                button.removeClass('btn-success');
-                button.addClass('btn-danger');
-                button.text('-');
-                button.attr('onclick','removeTester(event);');
-                var tester = $('<div class="input-group tester"><span class="input-group-addon">@</span><input type="text" class="form-control"><span class="input-group-btn"><button class="btn btn-success" type="button" onclick="addTester(event);">+</button></span></div>');
-
-                tester.keyup(function(e) {
-                    if(e.keyCode === 13) {
-                        addTester(e);
-                    }
-                });
-                parent.parents('.testers').append(tester);
-                tester.find('input').focus();
-            }
-        </script>
     </head>
     <body>
         <div class="container">
@@ -128,13 +48,6 @@
                         <h3 class="panel-title">Reviewers - GitHub user names</h3>
                     </div>
                     <div class="panel-body reviewers">
-                        <div class="input-group reviewer">
-                            <span class="input-group-addon">@</span>
-                            <input type="text" class="form-control" onkeyup="if(event.keyCode===13){addReviewer(event);}">
-                            <span class="input-group-btn">
-                                <button class="btn btn-success" type="button" onclick="addReviewer(event);">+</button>
-                            </span>
-                        </div><!-- /input-group -->
                     </div>
                 </div>
             </div>
@@ -144,13 +57,6 @@
                         <h3 class="panel-title">Testers</h3>
                     </div>
                     <div class="panel-body testers">
-                        <div class="input-group tester">
-                            <span class="input-group-addon">@</span>
-                            <input type="text" class="form-control" onkeyup="if(event.keyCode===13){addTester(event);}">
-                            <span class="input-group-btn">
-                                <button class="btn btn-success" type="button" onclick="addTester(event);">+</button>
-                            </span>
-                        </div><!-- /input-group -->
                     </div>
                 </div>
             </div><!-- /.row -->
